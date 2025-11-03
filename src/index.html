@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpine Todo</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="module" defer src="./main.js"></script>
+  </head>
+  <body>
+    <main class="app" x-data="todoApp()" x-init="init()">
+      <header class="app__header">
+        <h1>Todo List</h1>
+        <div class="app__input-group">
+          <input
+            class="app__input"
+            type="text"
+            placeholder="What needs to be done?"
+            x-model.trim="draft"
+            @keydown.enter="addTodo()"
+            autofocus
+          />
+          <button class="app__btn" @click="addTodo()">Add</button>
+        </div>
+      </header>
+
+      <section class="app__filters">
+        <button
+          class="app__filter"
+          :class="{ 'app__filter--active': filter === 'all' }"
+          @click="filter = 'all'"
+        >
+          All
+        </button>
+        <button
+          class="app__filter"
+          :class="{ 'app__filter--active': filter === 'active' }"
+          @click="filter = 'active'"
+        >
+          Active
+        </button>
+        <button
+          class="app__filter"
+          :class="{ 'app__filter--active': filter === 'completed' }"
+          @click="filter = 'completed'"
+        >
+          Completed
+        </button>
+        <button class="app__filter" @click="clearCompleted()">Clear Completed</button>
+      </section>
+
+      <section class="app__list">
+        <template x-for="todo in filteredTodos" :key="todo.id">
+          <article class="todo" :class="{ 'todo--done': todo.completed }">
+            <label class="todo__toggle">
+              <input type="checkbox" x-model="todo.completed" @change="persist()" />
+              <span></span>
+            </label>
+            <input
+              class="todo__title"
+              type="text"
+              x-model="todo.title"
+              @change="persist()"
+            />
+            <button class="todo__delete" @click="removeTodo(todo.id)" aria-label="Delete todo">
+              &times;
+            </button>
+          </article>
+        </template>
+
+        <p class="app__empty" x-show="filteredTodos.length === 0">Nothing here yet. Add a task!</p>
+      </section>
+
+      <footer class="app__footer">
+        <p x-text="`${remaining} task${remaining === 1 ? '' : 's'} remaining`"></p>
+        <label class="app__toggle">
+          <input type="checkbox" x-model="darkMode" @change="toggleTheme()" />
+          <span>Dark mode</span>
+        </label>
+      </footer>
+    </main>
+  </body>
+</html>
